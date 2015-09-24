@@ -14,6 +14,8 @@ public class Main {
 //        while (sqloutput.next()) {
 //            System.out.println(sqloutput.getString("name"));
 //        }
+//
+//        database.insertSQL("timezone", "20, 4, 5");
 
     }
 }

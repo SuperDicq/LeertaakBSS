@@ -46,8 +46,8 @@ public class DatabaseConnect {
 
     public void insertSQL(String tablename, String values){
         try {
-            Statement stmt = connection.createStatement();
-            stmt.executeQuery("INSERT INTO " + tablename + " VALUES(" + values + ")");
+            PreparedStatement stmt = connection.prepareStatement("INSERT INTO " + tablename + " VALUES(" + values + ")");
+            stmt.execute();
 
         } catch (SQLException ie){
             System.out.println("Can't excecute SQL statement (insert)");
