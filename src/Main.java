@@ -4,10 +4,16 @@ import java.sql.SQLException;
 public class Main {
 
     public static DatabaseConnect database;
+    public static XMLParser xmlparser;
     private static ResultSet sqloutput;
 
     public static void main(String[] args) throws SQLException {
         database = new DatabaseConnect();
+        xmlparser = new XMLParser();
+
+
+        System.out.println(xmlparser.readXML("src/output.xml"));
+
 
 //        Test statement
 //        sqloutput = database.excecuteSQL("SELECT name FROM stations WHERE country = 'AFGHANISTAN';");
