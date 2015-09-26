@@ -3,6 +3,7 @@ import org.xml.sax.*;
 import org.w3c.dom.*;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 
 /**
@@ -28,6 +29,8 @@ public class XMLParser {
 
     public ArrayList<String> readXML(String xml) {
         measurementsArray = new ArrayList<String>();
+
+
         Document dom;
 
         // Make an  instance of the DocumentBuilderFactory
@@ -39,7 +42,7 @@ public class XMLParser {
 
             // parse using the builder to get the DOM mapping of the
             // XML file
-            dom = db.parse(xml);
+            dom = db.parse(new InputSource(new StringReader(xml)));
             Element doc = dom.getDocumentElement();
 
 //          Set all details in Array
