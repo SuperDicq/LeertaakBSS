@@ -42,7 +42,7 @@ public class XMLParser {
     /**
      * Parse the XML file and create a new 'Measurement' object which contains all the data
      */
-    private void parseDocument() {
+    private synchronized void parseDocument() {
         // Create new hashmap, in which we will store all measurements data
         measurements = new HashMap<String, String>();
 
