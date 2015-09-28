@@ -10,9 +10,9 @@ public class ServerHandler implements Runnable {
     private static Socket socket;
     private static XMLParser xmlparser;
 
-    public ServerHandler(Socket new_socket, XMLParser new_xmlparser) throws IOException {
+    public ServerHandler(Socket new_socket, XMLParser xmlparser) throws IOException {
         socket = new_socket;
-        this.xmlparser = new_xmlparser;
+        this.xmlparser = xmlparser;
     }
 
     /**
@@ -33,14 +33,11 @@ public class ServerHandler implements Runnable {
                 buffer.append(line).append("\n");
 
                 if(line.contains("</WEATHERDATA>")){
-                    System.out.println("---------------");
-                    System.out.println(xmlparser.readXML(buffer.toString()));
+//                    System.out.println("---------------");
+                    xmlparser.readXML(buffer.toString());
                     buffer.setLength(0);
                 }
             }
-
-            // The data has been retrieved, so we should disconnect the client
-            socket.close();
 
         } catch (IOException exception) {
             System.out.println("IO exception occured!");

@@ -1,93 +1,34 @@
 import javax.xml.parsers.*;
+
 import org.xml.sax.*;
 import org.w3c.dom.*;
 
+
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Thijs on 24/09/2015.
  */
 public class XMLParser {
-    private String STN = null;
-    private String DATE = null;
-    private String TIME = null;
-    private String DEWP = null;
-    private String STP = null;
-    private String SLP = null;
-    private String VISIB = null;
-    private String WDSP = null;
-    private String TEMP = null;
-    private String PRCP = null;
-    private String SNDP = null;
-    private String FRSHTT = null;
-    private String CLDC = null;
-    private String WNDDIR = null;
 
-    private ArrayList<String> measurementsArray;
+    private HashMap<String, String> measurements;
+    private Document dom;
 
-    public ArrayList<String> readXML(String xml) {
-        measurementsArray = new ArrayList<String>();
-
-
-        Document dom;
-
-        // Make an  instance of the DocumentBuilderFactory
+    /**
+     * Prepare the document so we can parse
+     */
+    public void readXML(String xml) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
         try {
-            // use the factory to take an instance of the document builder
+            // Obtain DOM Document instance from the XML string
             DocumentBuilder db = dbf.newDocumentBuilder();
-
-            // parse using the builder to get the DOM mapping of the
-            // XML file
             dom = db.parse(new InputSource(new StringReader(xml)));
-            Element doc = dom.getDocumentElement();
 
-//          Set all details in Array
-
-            STN = getTextValue(STN, doc, "STN");
-            measurementsArray.add(STN);
-
-            DATE = getTextValue(DATE, doc, "DATE");
-            measurementsArray.add(DATE);
-
-            TIME = getTextValue(TIME, doc, "TIME");
-            measurementsArray.add(TIME);
-
-            TEMP = getTextValue(TEMP, doc, "TEMP");
-            measurementsArray.add(TEMP);
-
-            DEWP = getTextValue(DEWP, doc, "DEWP");
-            measurementsArray.add(DEWP);
-
-            STP = getTextValue(STP, doc, "STP");
-            measurementsArray.add(STP);
-
-            SLP = getTextValue(SLP, doc, "SLP");
-            measurementsArray.add(SLP);
-
-            VISIB = getTextValue(VISIB, doc, "VISIB");
-            measurementsArray.add(VISIB);
-
-            WDSP = getTextValue(WDSP, doc, "WDSP");
-            measurementsArray.add(WDSP);
-
-            PRCP = getTextValue(PRCP, doc, "PRCP");
-            measurementsArray.add(PRCP);
-
-            SNDP = getTextValue(SNDP, doc, "SNDP");
-            measurementsArray.add(SNDP);
-
-            FRSHTT = getTextValue(FRSHTT, doc, "FRSHTT");
-            measurementsArray.add(FRSHTT);
-
-            CLDC = getTextValue(CLDC, doc, "CLDC");
-            measurementsArray.add(CLDC);
-
-            WNDDIR = getTextValue(WNDDIR, doc, "WNDDIR");
-            measurementsArray.add(WNDDIR);
+            // Parse the XML string and create measurement objects from it
+            parseDocument();
 
         } catch (ParserConfigurationException pce) {
             System.out.println(pce.getMessage());
@@ -96,12 +37,55 @@ public class XMLParser {
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
         }
-
-        return measurementsArray;
     }
 
-    private String getTextValue(String def, Element doc, String tag) {
-        String value = def;
+    /**
+     * Parse the XML file and create a new 'Measurement' object which contains all the data
+     */
+    private void parseDocument() {
+        // Create new hashmap, in which we will store all measurements data
+        measurements = new HashMap<String, String>();
+
+        // Loop through every <MEASUREMENT>
+        Element docEle = dom.getDocumentElement();
+
+        NodeList nl = docEle.getElementsByTagName("MEASUREMENT");
+
+        if (nl != null && nl.getLength() > 0) {
+            for (int i = 0; i < nl.getLength(); i++) {
+                // Get all the elements within the <MEASUREMENT> tag
+                Element el = (Element) nl.item(i);
+
+                // Clear the hashmap
+                measurements.clear();
+
+                // Put all measurement values in the hashmap
+                measurements.put("STN", getValueOfTag(el, "STN"));
+                measurements.put("DATE", getValueOfTag(el, "DATE"));
+                measurements.put("TIME", getValueOfTag(el, "TIME"));
+                measurements.put("TEMP", getValueOfTag(el, "TEMP"));
+                measurements.put("DEWP", getValueOfTag(el, "DEWP"));
+                measurements.put("STP", getValueOfTag(el, "STP"));
+                measurements.put("SLP", getValueOfTag(el, "SLP"));
+                measurements.put("VISIB", getValueOfTag(el, "VISIB"));
+                measurements.put("WDSP", getValueOfTag(el, "WDSP"));
+                measurements.put("PRCP", getValueOfTag(el, "PRCP"));
+                measurements.put("SNDP", getValueOfTag(el, "SNDP"));
+                measurements.put("FRSHTT", getValueOfTag(el, "FRSHTT"));
+                measurements.put("CLDC", getValueOfTag(el, "CLDC"));
+                measurements.put("WNDDIR", getValueOfTag(el, "WNDDIR"));
+
+                // Create Measurment object and pass on the hashmap for the constructor
+                new Measurement(measurements);
+            }
+        }
+    }
+
+    /**
+     * Get the value of a specific tag within the Element
+     */
+    private String getValueOfTag(Element doc, String tag) {
+        String value = null;
         NodeList nl;
         nl = doc.getElementsByTagName(tag);
         if (nl.getLength() > 0 && nl.item(0).hasChildNodes()) {
