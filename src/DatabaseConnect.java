@@ -2,11 +2,11 @@ import java.sql.*;
 
 public class DatabaseConnect {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/";
-    private static final String DBNAME = "unwdmi";
+    private static final String URL = "jdbc:mysql://topster21.net:13462/";
+    private static final String DBNAME = "projectdb2";
     private static final String DRIVER = "com.mysql.jdbc.Driver";
-    private static final String USERNAME = "root";
-    private static final String PASSWORD = "";
+    private static final String USERNAME = "anotheruser";
+    private static final String PASSWORD = "3Pl8DnOXcXj7khx3bEcG";
 
     private Connection connection;
 
