@@ -6,7 +6,10 @@ import org.w3c.dom.*;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.sql.Connection;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by Thijs on 24/09/2015.
@@ -15,7 +18,6 @@ public class XMLParser {
 
     private HashMap<String, String> measurements;
     private Document dom;
-
     /**
      * Prepare the document so we can parse
      */
@@ -76,7 +78,27 @@ public class XMLParser {
                 measurements.put("WNDDIR", getValueOfTag(el, "WNDDIR"));
 
                 // Create Measurment object and pass on the hashmap for the constructor
-                new Measurement(measurements);
+//                new Measurement(measurements);
+
+                Iterator it = measurements.entrySet().iterator();
+
+
+
+                String tablename = "unwdi";
+                String values = "";
+
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry)it.next();
+                    values += pair.getValue() + ", ";
+                    it.remove(); // avoids a ConcurrentModificationException
+                }
+
+                String sql = "INSERT INTO " + tablename + " VALUES(" + values;
+
+                sql = sql.substring(0, sql.length()-2);
+                sql += ")";
+
+                System.out.println(sql);
             }
         }
     }
