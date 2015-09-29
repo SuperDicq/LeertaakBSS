@@ -1,4 +1,6 @@
-import java.util.HashMap;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * Created by Thijs on 26/09/2015.
@@ -19,7 +21,26 @@ public class Measurement {
     private String clouds = null;
     private String windDirection = null;
 
-    public Measurement(HashMap<String, String> measurements) {
+    public Measurement(Map<String, String> measurements) {
+    	
+    	Iterator it = measurements.entrySet().iterator();
+        while (it.hasNext()) {
+        	
+            Map.Entry pair = (Map.Entry)it.next();
+            //System.out.println(pair.getKey() + " = " + pair.getValue());
+            if(pair.getValue() == null) {
+            	try {
+	            	DatabaseConnect database = new DatabaseConnect();
+	            	ResultSet rs = database.executeSQL("SELECT AVG(" + pair.getKey() + ") FROM measurement;");
+	            	String val;
+					val = rs.getString(0);
+					pair.setValue(val);
+				} catch (SQLException e) {}
+            	
+            }
+            
+        }
+    	
         this.stationNr = measurements.get("STN");
         this.date = measurements.get("DATE");;
         this.time = measurements.get("TIME");;
