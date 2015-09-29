@@ -7,16 +7,19 @@ import org.w3c.dom.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Created by Thijs on 24/09/2015.
  */
 public class XMLParser {
 
-    private HashMap<String, String> measurements;
+    private Map<String, String> measurements;
     private Document dom;
     /**
      * Prepare the document so we can parse
@@ -78,14 +81,26 @@ public class XMLParser {
                 measurements.put("gebeurtenissen", getValueOfTag(el, "FRSHTT"));
 
 
-                // Create Measurment object and pass on the hashmap for the constructor
-//                new Measurement(measurements);
+                Iterator<Entry<String, String>> it = measurements.entrySet().iterator();
+                while (it.hasNext()) {
+                	
+                    Map.Entry<String, String> pair = (Entry<String, String>)it.next();
+                    //System.out.println(pair.getKey() + " = " + pair.getValue());
+                    if(pair.getValue() == null) {
+                    	try {
+        	            	DatabaseConnect database = new DatabaseConnect();
+        	            	ResultSet rs = database.executeSQL("SELECT AVG(" + pair.getKey() + ") FROM measurement WHERE station_id="+ measurements.get("station_id") +";");
+        	            	System.out.println(rs);
+        	            	String val;
+        					val = rs.getString(0);
+        					pair.setValue(val);
+        				} catch (SQLException e) {}
+                    	
+                    }
+                    
+                }
 
-                Iterator it = measurements.entrySet().iterator();
-
-
-
-                String sql = "INSERT INTO measurement VALUES(" +
+                String sql = "INSERT INTO measurement(station_id, local_date, local_time, temperatuur, dauwpunt, luchtdruk_station, luchtdruk_zee, zichtbaarheid, neerslag, sneeuwdiepte, bewolking, windrichting, windsnelheid, gebeurtenissen) VALUES(" +
                         "'" + measurements.get("station_id") + "', "+
                         "'" + measurements.get("local_date") + "', "+
                         "'" + measurements.get("local_time") + "', "+
@@ -102,9 +117,7 @@ public class XMLParser {
                         "'" + measurements.get("gebeurtenissen") + "')";
 
 
-                System.out.println(sql);
-
-//                System.out.println(sql);
+                //System.out.println(sql);
                 DatabaseConnect database = new DatabaseConnect();
                 database.insertSQL(sql);
 
