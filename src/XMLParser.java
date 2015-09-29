@@ -89,7 +89,7 @@ public class XMLParser {
                     if(pair.getValue() == null) {
                     	try {
         	            	DatabaseConnect database = new DatabaseConnect();
-        	            	ResultSet rs = database.executeSQL("SELECT AVG(" + pair.getKey() + ") FROM measurement WHERE station_id="+ measurements.get("station_id") +";");
+        	            	ResultSet rs = database.executeSQL("SELECT AVG(" + pair.getKey() + ") FROM (SELECT " + pair.getKey() + " FROM measurement ORDER BY local_date LIMIT 30) WHERE station_id="+ measurements.get("station_id") +";");
         	            	System.out.println(rs);
         	            	String val;
         					val = rs.getString(0);
