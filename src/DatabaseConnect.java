@@ -30,7 +30,7 @@ public class DatabaseConnect {
     }
 
 //    Database interaction
-    public ResultSet excecuteSQL (String statement) {
+    public ResultSet executeSQL (String statement) {
         try {
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery(statement);
