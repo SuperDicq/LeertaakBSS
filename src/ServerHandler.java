@@ -4,15 +4,17 @@
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.Connection;
 
 public class ServerHandler implements Runnable {
 
     private static Socket socket;
     private static XMLParser xmlparser;
 
-    public ServerHandler(Socket new_socket, XMLParser xmlparser) throws IOException {
+    public ServerHandler(Socket new_socket) throws IOException {
         socket = new_socket;
         this.xmlparser = xmlparser;
+
     }
 
     /**
@@ -34,6 +36,7 @@ public class ServerHandler implements Runnable {
 
                 if(line.contains("</WEATHERDATA>")){
 //                    System.out.println("---------------");
+                    XMLParser xmlparser = new XMLParser();
                     xmlparser.readXML(buffer.toString());
                     buffer.setLength(0);
                 }

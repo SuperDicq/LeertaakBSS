@@ -4,6 +4,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
 
 public class Server {
     public static DatabaseConnect database;
@@ -15,7 +16,7 @@ public class Server {
         // Listen to server port (7789 is default port of Unwdmi generator)
         int portNumber = 7789;
         database = new DatabaseConnect();
-        XMLParser xmparser = new XMLParser();
+//        XMLParser xmparser = new XMLParser();
 
         // Await connections of clients
         try {
@@ -26,7 +27,7 @@ public class Server {
 
             while (true) {
                 socket = serverSocket.accept();
-                new Thread(new ServerHandler(socket, xmparser)).start();
+                new Thread(new ServerHandler(socket)).start();
             }
 
         // Catch potential exceptions
