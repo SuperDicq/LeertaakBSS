@@ -62,20 +62,21 @@ public class XMLParser {
                 measurements.clear();
 
                 // Put all measurement values in the hashmap
-                measurements.put("STN", getValueOfTag(el, "STN"));
-                measurements.put("DATE", getValueOfTag(el, "DATE"));
-                measurements.put("TIME", getValueOfTag(el, "TIME"));
-                measurements.put("TEMP", getValueOfTag(el, "TEMP"));
-                measurements.put("DEWP", getValueOfTag(el, "DEWP"));
-                measurements.put("STP", getValueOfTag(el, "STP"));
-                measurements.put("SLP", getValueOfTag(el, "SLP"));
-                measurements.put("VISIB", getValueOfTag(el, "VISIB"));
-                measurements.put("WDSP", getValueOfTag(el, "WDSP"));
-                measurements.put("PRCP", getValueOfTag(el, "PRCP"));
-                measurements.put("SNDP", getValueOfTag(el, "SNDP"));
-                measurements.put("FRSHTT", getValueOfTag(el, "FRSHTT"));
-                measurements.put("CLDC", getValueOfTag(el, "CLDC"));
-                measurements.put("WNDDIR", getValueOfTag(el, "WNDDIR"));
+                measurements.put("station_id", getValueOfTag(el, "STN"));
+                measurements.put("local_date", getValueOfTag(el, "DATE"));
+                measurements.put("local_time", getValueOfTag(el, "TIME"));
+                measurements.put("temperatuur", getValueOfTag(el, "TEMP"));
+                measurements.put("dauwpunt", getValueOfTag(el, "DEWP"));
+                measurements.put("luchtdruk_station", getValueOfTag(el, "STP"));
+                measurements.put("luchtdruk_zee", getValueOfTag(el, "SLP"));
+                measurements.put("zichtbaarheid", getValueOfTag(el, "VISIB"));
+                measurements.put("neerslag", getValueOfTag(el, "PRCP"));
+                measurements.put("sneeuwdiepte", getValueOfTag(el, "SNDP"));
+                measurements.put("bewolking", getValueOfTag(el, "CLDC"));
+                measurements.put("windrichting", getValueOfTag(el, "WNDDIR"));
+                measurements.put("windsnelheid", getValueOfTag(el, "WDSP"));
+                measurements.put("gebeurtenissen", getValueOfTag(el, "FRSHTT"));
+
 
                 // Create Measurment object and pass on the hashmap for the constructor
 //                new Measurement(measurements);
@@ -84,21 +85,29 @@ public class XMLParser {
 
 
 
-                String tablename = "unwdi";
-                String values = "";
+                String sql = "INSERT INTO measurement VALUES(" +
+                        "'" + measurements.get("station_id") + "', "+
+                        "'" + measurements.get("local_date") + "', "+
+                        "'" + measurements.get("local_time") + "', "+
+                        "'" + measurements.get("temperatuur") + "', "+
+                        "'" + measurements.get("dauwpunt") + "', "+
+                        "'" + measurements.get("luchtdruk_station") + "', "+
+                        "'" + measurements.get("luchtdruk_zee") + "', "+
+                        "'" + measurements.get("zichtbaarheid") + "', "+
+                        "'" + measurements.get("neerslag") + "', "+
+                        "'" + measurements.get("sneeuwdiepte") + "', "+
+                        "'" + measurements.get("bewolking") + "', "+
+                        "'" + measurements.get("windrichting") + "', "+
+                        "'" + measurements.get("windsnelheid") + "', "+
+                        "'" + measurements.get("gebeurtenissen") + "')";
 
-                while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry)it.next();
-                    values += pair.getValue() + ", ";
-                    it.remove(); // avoids a ConcurrentModificationException
-                }
-
-                String sql = "INSERT INTO " + tablename + " VALUES(" + values;
-
-                sql = sql.substring(0, sql.length()-2);
-                sql += ")";
 
                 System.out.println(sql);
+
+//                System.out.println(sql);
+                DatabaseConnect database = new DatabaseConnect();
+                database.insertSQL(sql);
+
             }
         }
     }

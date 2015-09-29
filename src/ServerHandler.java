@@ -42,6 +42,8 @@ public class ServerHandler implements Runnable {
                 }
             }
 
+            socket.close();
+
         } catch (IOException exception) {
             System.out.println("IO exception occured!");
             exception.printStackTrace();
