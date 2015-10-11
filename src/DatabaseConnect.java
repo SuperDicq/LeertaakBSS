@@ -65,7 +65,6 @@ public class DatabaseConnect {
             Statement stmt = connection.createStatement();
             String sql = statement;
             stmt.executeUpdate(sql);
-            System.out.println("inserting");
         } catch (SQLException e) {
             e.printStackTrace();
         }

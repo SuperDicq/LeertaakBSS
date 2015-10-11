@@ -1,15 +1,14 @@
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ServerHandler implements Runnable {
 
     private static Socket socket;
-//    private static XMLParser xmlparser;
+    private ArrayList<Measurement> measurementArray;
 
     public ServerHandler(Socket new_socket) throws IOException {
         socket = new_socket;
-//        ServerHandler.xmlparser = xmlparser;
-
     }
 
     /**
@@ -31,9 +30,7 @@ public class ServerHandler implements Runnable {
                 buffer.append(line).append("\n");
 
                 if(line.contains("</WEATHERDATA>")){
-//                    System.out.println("---------------");
-                    XMLParser xmlparser = new XMLParser();
-                    xmlparser.readXML(buffer.toString());
+                    dataProcessing(buffer.toString());
                     buffer.setLength(0);
                 }
             }
@@ -44,5 +41,29 @@ public class ServerHandler implements Runnable {
             System.out.println("IO exception occured!");
             exception.printStackTrace();
         }
+    }
+
+    /**
+     * Process the XML data in the following order:
+     *      1. Parse the XML data and create a Measurement object for each measurement
+     *      2. Validate the data by using the DataCheck class
+     *      3. Add measurement to the MeasurementCollection
+     *      4. Write all measurements to CSV or SQL (WILL BE DONE IN MEASUREMENTCOLLECTION CLASS)
+     */
+
+    public void dataProcessing(String rawXML){
+        // 1. Parse the XML data and create a Measurement object for each measurement
+        XMLParser xmlParser = new XMLParser();
+        measurementArray = xmlParser.xmlToMeasurmentObjects(rawXML);
+
+        // 2. Validate the data by using the DataCheck class
+//        DataCheck dataCheck = new DataCheck();
+//        measurementArray = dataCheck.checkData(measurementArray);
+
+        // 3. Add measurement to the MeasurementCollection
+        for (Measurement measurement: measurementArray) {
+            MeasurementCollection.add(measurement);
+        }
+
     }
 }

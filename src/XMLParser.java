@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -18,13 +19,16 @@ import java.util.Map.Entry;
  */
 public class XMLParser {
 
+    private ArrayList<Measurement> measurementArray;
     private Map<String, String> measurements;
     private Document dom;
+
     /**
      * Prepare the document so we can parse
      */
-    public void readXML(String xml) {
+    public ArrayList<Measurement> xmlToMeasurmentObjects(String xml) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        measurementArray = new ArrayList<Measurement>(10);
 
         try {
             // Obtain DOM Document instance from the XML string
@@ -41,18 +45,20 @@ public class XMLParser {
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
         }
+
+        return measurementArray;
     }
 
     /**
      * Parse the XML file and create a new 'Measurement' object which contains all the data
      */
-    private synchronized void parseDocument() {
+    private void parseDocument() {
+
         // Create new hashmap, in which we will store all measurements data
         measurements = new HashMap<String, String>();
 
-        // Loop through every <MEASUREMENT>
+        // Loop through every <MEASUREMENT> in XML file
         Element docEle = dom.getDocumentElement();
-
         NodeList nl = docEle.getElementsByTagName("MEASUREMENT");
 
         if (nl != null && nl.getLength() > 0) {
@@ -79,47 +85,8 @@ public class XMLParser {
                 measurements.put("windsnelheid", getValueOfTag(el, "WDSP"));
                 measurements.put("gebeurtenissen", getValueOfTag(el, "FRSHTT"));
 
-
-                Iterator<Entry<String, String>> it = measurements.entrySet().iterator();
-                while (it.hasNext()) {
-                	
-                    Map.Entry<String, String> pair = it.next();
-                    //System.out.println(pair.getKey() + " = " + pair.getValue());
-                    if(pair.getValue() == null) {
-                    	try {
-        	            	DatabaseConnect database = new DatabaseConnect();
-        	            	ResultSet rs = database.executeSQL("SELECT AVG(" + pair.getKey() + ") FROM (SELECT " + pair.getKey() + " FROM measurement ORDER BY local_date LIMIT 30) WHERE station_id="+ measurements.get("station_id") +";");
-        	            	System.out.println(rs);
-        	            	String val;
-        					val = rs.getString(0);
-        					pair.setValue(val);
-        				} catch (SQLException e) {}
-                    	
-                    }
-                    
-                }
-
-                String sql = "INSERT INTO measurement(station_id, local_date, local_time, temperatuur, dauwpunt, luchtdruk_station, luchtdruk_zee, zichtbaarheid, neerslag, sneeuwdiepte, bewolking, windrichting, windsnelheid, gebeurtenissen) VALUES(" +
-                        "'" + measurements.get("station_id") + "', "+
-                        "'" + measurements.get("local_date") + "', "+
-                        "'" + measurements.get("local_time") + "', "+
-                        "'" + measurements.get("temperatuur") + "', "+
-                        "'" + measurements.get("dauwpunt") + "', "+
-                        "'" + measurements.get("luchtdruk_station") + "', "+
-                        "'" + measurements.get("luchtdruk_zee") + "', "+
-                        "'" + measurements.get("zichtbaarheid") + "', "+
-                        "'" + measurements.get("neerslag") + "', "+
-                        "'" + measurements.get("sneeuwdiepte") + "', "+
-                        "'" + measurements.get("bewolking") + "', "+
-                        "'" + measurements.get("windrichting") + "', "+
-                        "'" + measurements.get("windsnelheid") + "', "+
-                        "'" + measurements.get("gebeurtenissen") + "')";
-
-
-                //System.out.println(sql);
-                DatabaseConnect database = new DatabaseConnect();
-                database.insertSQL(sql);
-
+                // Make new measurement object which contains all weather items and add it to the measurement collection array
+                measurementArray.add(new Measurement(measurements));
             }
         }
     }
