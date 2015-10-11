@@ -1,6 +1,3 @@
-/**
- * Created by Thijs on 25/09/2015.
- */
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,7 +17,7 @@ public class Server {
 
         // Await connections of clients
         try {
-;
+
             Socket socket;
             System.out.println("Server started on port " + portNumber);
 
