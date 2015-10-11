@@ -11,10 +11,10 @@ import java.util.ArrayList;
 public class MeasurementCollection {
 
     public static ArrayList<Measurement> measurementCollectionArray;
-    private static final int BATCHSIZE = 0;
+    private static ArrayList<Measurement> measurementCollectionArray_TEMP;
+    private static final int BATCHSIZE = 500;
     private static boolean sql_enabled;
     private static boolean csv_enabled;
-
 
     public MeasurementCollection(boolean sql, boolean csv) {
         measurementCollectionArray = new ArrayList<Measurement>();
@@ -31,10 +31,22 @@ public class MeasurementCollection {
      * write the data to a source.
      */
 
-    public static void add(Measurement measurement){
+    public synchronized static void add(Measurement measurement){
         measurementCollectionArray.add(measurement);
 
+        if(sql_enabled){
+            writeToSQL();
+        }
+
+        if(csv_enabled){
+            writeToCSV(measurementCollectionArray_TEMP);
+        }
+
+
         if(measurementCollectionArray.size() >= BATCHSIZE){
+            measurementCollectionArray_TEMP = measurementCollectionArray;
+            measurementCollectionArray.clear();
+
             System.out.println("Current collections size: " + measurementCollectionArray.size() +  "/" + BATCHSIZE);
 
             // Write to sources
@@ -43,8 +55,9 @@ public class MeasurementCollection {
             }
 
             if(csv_enabled){
-                writeToCSV();
+                writeToCSV(measurementCollectionArray_TEMP);
             }
+
         }
     }
 
@@ -52,9 +65,9 @@ public class MeasurementCollection {
      * Write all measurements in the Collections array to a external source
      */
 
-    private static void writeToCSV(){
-        // CODE HIER
-        System.out.println("CSV schrijven!");
+    private static void writeToCSV(ArrayList<Measurement> measurementBatch){
+        CsvFileWriter csv = new CsvFileWriter();
+        csv.writeCsvFile("weatherdata.csv", measurementBatch);
     }
 
     private static void writeToSQL(){
