@@ -1,19 +1,14 @@
-/**
- * Created by Thijs on 25/09/2015.
- */
-
 import java.io.*;
 import java.net.Socket;
-import java.sql.Connection;
 
 public class ServerHandler implements Runnable {
 
     private static Socket socket;
-    private static XMLParser xmlparser;
+//    private static XMLParser xmlparser;
 
     public ServerHandler(Socket new_socket) throws IOException {
         socket = new_socket;
-        this.xmlparser = xmlparser;
+//        ServerHandler.xmlparser = xmlparser;
 
     }
 
@@ -22,7 +17,8 @@ public class ServerHandler implements Runnable {
      * We need to convert this XML with our XMLParser and then write it to the database.
      */
 
-    public void run(){
+    @Override
+	public void run(){
         try {
             // Create inputstream to be able to receive data from the client
             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));

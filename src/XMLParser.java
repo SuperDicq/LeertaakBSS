@@ -6,7 +6,6 @@ import org.w3c.dom.*;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -84,7 +83,7 @@ public class XMLParser {
                 Iterator<Entry<String, String>> it = measurements.entrySet().iterator();
                 while (it.hasNext()) {
                 	
-                    Map.Entry<String, String> pair = (Entry<String, String>)it.next();
+                    Map.Entry<String, String> pair = it.next();
                     //System.out.println(pair.getKey() + " = " + pair.getValue());
                     if(pair.getValue() == null) {
                     	try {
