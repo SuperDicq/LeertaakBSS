@@ -103,4 +103,8 @@ public class Measurement {
     public String getGebeurtenissen() {
         return gebeurtenissen;
     }
+
+    public String getCSV(){
+        return (this.station_id + ", " + this.local_date + ", " + this.local_time + ", " + this.temperatuur + ", " + this.dauwpunt + ", " + this.luchtdruk_station + ", " + this.luchtdruk_zee + ", " + this.zichtbaarheid + ", " + this.neerslag + ", " + this.sneeuwdiepte + ", " + this.bewolking + ", " + this.windrichting + ", " + this.windsnelheid + ", " + this.gebeurtenissen);
+    }
 }
