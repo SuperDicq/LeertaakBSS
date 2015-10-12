@@ -26,7 +26,7 @@ public class XMLParser {
     /**
      * Prepare the document so we can parse
      */
-    public ArrayList<Measurement> xmlToMeasurmentObjects(String xml) {
+    public ArrayList<Measurement> xmlToMeasurementObjects(String xml) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         measurementArray = new ArrayList<Measurement>(10);
 
