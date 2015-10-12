@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class ServerHandler implements Runnable {
 
@@ -42,6 +43,57 @@ public class ServerHandler implements Runnable {
             exception.printStackTrace();
         }
     }
+    
+    public ArrayList<Measurement> dataCheck(ArrayList<Measurement> measurementArray) {
+    	
+    	// Get the average measurement in an ArrayList
+		ArrayList<String> averageMeasurement = MeasurementCollection.getBatchAverages();
+    	
+		// Iterate through ArrayList
+    	for (int i = 0; i < measurementArray.size(); i++) {
+    		
+    		// Get Measurement object of current iteration
+    		Measurement measurementObject = measurementArray.get(i);
+    		
+    		// Get a map of the Measurement object so we can iterate
+    		Map<String, String> measurementMap = measurementObject.getMeasurementsMap();
+    		
+    		int j = 0;
+    		Boolean needFix = false;
+    		Iterator<Entry<String, String>> it = measurementMap.entrySet().iterator();
+    		
+    		// Iterate through map
+    		while(it.hasNext()) {
+    			
+    			 Map.Entry<String, String> pair = (Entry<String, String>)it.next();
+    			 
+    			 // Replaces any null value in this map with corrosponding value from the averageMeasurement
+    			 if(pair.getValue() == null) {
+    				 
+    				 String averageValue = averageMeasurement.get(j);
+					 measurementMap.put(pair.getKey(), averageValue);
+					 
+					 needFix = true;
+    				 
+    			 }
+    			
+    			 j += 1;
+    			 
+    		}
+    		
+    		// Avoids these statements if redundant
+    		if(needFix == true) {
+    			
+    			Measurement fixedMeasurement = new Measurement(measurementMap);
+    			measurementArray.set(i, fixedMeasurement);
+    			
+    		}
+    		
+        }
+    	
+    	return measurementArray;
+    
+    }
 
     /**
      * Process the XML data in the following order:
@@ -54,11 +106,10 @@ public class ServerHandler implements Runnable {
     public void dataProcessing(String rawXML){
         // 1. Parse the XML data and create a Measurement object for each measurement
         XMLParser xmlParser = new XMLParser();
-        measurementArray = xmlParser.xmlToMeasurmentObjects(rawXML);
+        measurementArray = xmlParser.xmlToMeasurementObjects(rawXML);
 
-        // 2. Validate the data by using the DataCheck class
-//        DataCheck dataCheck = new DataCheck();
-//        measurementArray = dataCheck.checkData(measurementArray);
+        // 2. Validate the data
+        measurementArray = dataCheck(measurementArray);
 
         // 3. Add measurement to the MeasurementCollection
         for (Measurement measurement: measurementArray) {
@@ -66,4 +117,5 @@ public class ServerHandler implements Runnable {
         }
 
     }
+    
 }
