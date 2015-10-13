@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Timer;
 
 public class Server {
     public static DatabaseConnect database;
@@ -11,7 +12,7 @@ public class Server {
      * Make a new server socket and wait for clients to connect. Once a client connects with the server, a new instance of ServerHandler will be created.
      */
 
-    public static void main(String args[]) throws IOException{
+    public synchronized static void main(String args[]) throws IOException{
 
         // Make Measurement Collection, which stores all measurements
         new MeasurementCollection(sql_enabled, csv_enabled);
@@ -21,6 +22,9 @@ public class Server {
         database = new DatabaseConnect();
 
         ServerSocket serverSocket = new ServerSocket(portNumber);
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new ProcessingSpeedProfiler(), 0, 1000);
 
         // Await connections of clients
         try {

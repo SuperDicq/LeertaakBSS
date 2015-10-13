@@ -10,6 +10,7 @@ public class ServerHandler implements Runnable {
 
     public ServerHandler(Socket new_socket) throws IOException {
         socket = new_socket;
+
     }
 
     /**
@@ -35,9 +36,6 @@ public class ServerHandler implements Runnable {
                     buffer.setLength(0);
                 }
             }
-
-            socket.close();
-
         } catch (IOException exception) {
             System.out.println("IO exception occured!");
             exception.printStackTrace();
@@ -108,12 +106,17 @@ public class ServerHandler implements Runnable {
         XMLParser xmlParser = new XMLParser();
         measurementArray = xmlParser.xmlToMeasurementObjects(rawXML);
 
+
         // 2. Validate the data
-        measurementArray = dataCheck(measurementArray);
+//        measurementArray = dataCheck(measurementArray);
 
         // 3. Add measurement to the MeasurementCollection
         for (Measurement measurement: measurementArray) {
             MeasurementCollection.add(measurement);
+
+            // Send measurement info to Process Speed Profiler
+            ProcessingSpeedProfiler.addProcessingCount();
+            ProcessingSpeedProfiler.processedCountDirect++;
         }
 
     }

@@ -18,7 +18,7 @@ public class MeasurementCollection {
 
     public static ArrayList<Measurement> measurementCollectionArray;
     private static ArrayList<Measurement> measurementCollectionArray_TEMP;
-    private static final int BATCHSIZE = 1500;
+    private static final int BATCHSIZE = 2000;
     private static boolean sql_enabled;
     private static boolean csv_enabled;
     private static boolean csv_initiliazed = false;
@@ -41,11 +41,11 @@ public class MeasurementCollection {
 
     public synchronized static void add(Measurement measurement){
         measurementCollectionArray.add(measurement);
-
+        System.out.println("Current collections size: " + measurementCollectionArray.size() + "/" + BATCHSIZE);
         if(measurementCollectionArray.size() >= BATCHSIZE){
             measurementCollectionArray_TEMP = measurementCollectionArray;
 //            measurementCollectionArray.clear();
-            System.out.println("Current collections size: " + measurementCollectionArray.size() + "/" + BATCHSIZE);
+
 
             // Write to sources
             if(sql_enabled){
@@ -173,7 +173,6 @@ public class MeasurementCollection {
         try {
             fileWriter = new FileWriter(fileName);
             fileWriter.append(String.valueOf(csvText.toString()));
-            System.out.println("CSV file was created successfully");
 
         }catch (Exception ex){
 
