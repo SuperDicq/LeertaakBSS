@@ -48,6 +48,10 @@ public class Measurement {
         return measurementsMap;
     }
 
+    public Integer getMeasurementsMapItem(String key) {
+        return Integer.parseInt(measurementsMap.get(key));
+    }
+
     public String getStation_id() {
         return station_id;
     }
@@ -105,6 +109,6 @@ public class Measurement {
     }
 
     public String getCSV(){
-        return (this.station_id + ", " + this.local_date + ", " + this.local_time + ", " + this.temperatuur + ", " + this.dauwpunt + ", " + this.luchtdruk_station + ", " + this.luchtdruk_zee + ", " + this.zichtbaarheid + ", " + this.neerslag + ", " + this.sneeuwdiepte + ", " + this.bewolking + ", " + this.windrichting + ", " + this.windsnelheid + ", " + this.gebeurtenissen);
+          return (measurementsMap.get("station_id") + ", " + measurementsMap.get("local_date") + ", " + measurementsMap.get("local_time") + ", " + measurementsMap.get("temperatuur") + ", " + measurementsMap.get("dauwpunt") + ", " + measurementsMap.get("luchtdruk_station") + ", " + measurementsMap.get("luchtdruk_zee") + ", " + measurementsMap.get("zichtbaarheid") + ", " + measurementsMap.get("neerslag") + ", " + measurementsMap.get("sneeuwdiepte") + ", " + measurementsMap.get("bewolking") + ", " + measurementsMap.get("windrichting") + ", " + measurementsMap.get("windsnelheid") + ", " + measurementsMap.get("gebeurtenissen"));
     }
 }

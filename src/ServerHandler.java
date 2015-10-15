@@ -41,57 +41,6 @@ public class ServerHandler implements Runnable {
             exception.printStackTrace();
         }
     }
-    
-    public ArrayList<Measurement> dataCheck(ArrayList<Measurement> measurementArray) {
-    	
-    	// Get the average measurement in an ArrayList
-		ArrayList<String> averageMeasurement = MeasurementCollection.getBatchAverages();
-    	
-		// Iterate through ArrayList
-    	for (int i = 0; i < measurementArray.size(); i++) {
-    		
-    		// Get Measurement object of current iteration
-    		Measurement measurementObject = measurementArray.get(i);
-    		
-    		// Get a map of the Measurement object so we can iterate
-    		Map<String, String> measurementMap = measurementObject.getMeasurementsMap();
-    		
-    		int j = 0;
-    		Boolean needFix = false;
-    		Iterator<Entry<String, String>> it = measurementMap.entrySet().iterator();
-    		
-    		// Iterate through map
-    		while(it.hasNext()) {
-    			
-    			 Map.Entry<String, String> pair = (Entry<String, String>)it.next();
-    			 
-    			 // Replaces any null value in this map with corrosponding value from the averageMeasurement
-    			 if(pair.getValue() == null) {
-    				 
-    				 String averageValue = averageMeasurement.get(j);
-					 measurementMap.put(pair.getKey(), averageValue);
-					 
-					 needFix = true;
-    				 
-    			 }
-    			
-    			 j += 1;
-    			 
-    		}
-    		
-    		// Avoids these statements if redundant
-    		if(needFix == true) {
-    			
-    			Measurement fixedMeasurement = new Measurement(measurementMap);
-    			measurementArray.set(i, fixedMeasurement);
-    			
-    		}
-    		
-        }
-    	
-    	return measurementArray;
-    
-    }
 
     /**
      * Process the XML data in the following order:
@@ -108,7 +57,7 @@ public class ServerHandler implements Runnable {
 
 
         // 2. Validate the data
-//        measurementArray = dataCheck(measurementArray);
+        measurementArray = dataCheck(measurementArray);
 
         // 3. Add measurement to the MeasurementCollection
         for (Measurement measurement: measurementArray) {
@@ -118,7 +67,53 @@ public class ServerHandler implements Runnable {
             ProcessingSpeedProfiler.addProcessingCount();
             ProcessingSpeedProfiler.processedCountDirect++;
         }
-
     }
-    
+
+    /**
+     * Check for missing values (null values) and fix them by extrapolating
+     */
+
+    public ArrayList<Measurement> dataCheck(ArrayList<Measurement> measurementArray) {
+        // Loop through every Measurement object in array
+        for (int i = 0; i < measurementArray.size(); i++) {
+
+            // Set measurement object to variable
+            Measurement fixedMeasurement = measurementArray.get(i);
+
+            // Loop through every weather item in Measurement Map
+            for (Map.Entry<String, String> entry : fixedMeasurement.getMeasurementsMap().entrySet()){
+
+                // If a value is null, we should extrapolate
+                if(entry.getValue() == null){
+                    
+
+                    // Get history Stack of this particular station and get the average of our missing value.
+                    try {
+                        Stack<Measurement> stationHistory_temp = MeasurementCollection.stationHistory.get(fixedMeasurement.getStation_id());
+
+                        int totalValue = 0;
+                        int averageCount = 0;
+
+                        for(Measurement obj : stationHistory_temp)
+                        {
+                            averageCount++;
+                            totalValue += obj.getMeasurementsMapItem(entry.getKey());
+                        }
+
+                        System.out.println("New value: " + totalValue / averageCount);
+
+                        // Set extrapolated value in map and update the Array list
+//                        entry.setValue("lel");
+//                        System.out.println("Null waarde veranderd AVG: " + averageCount + " | avgInt" + averageInt);
+                    } catch (Exception e){
+
+                    }
+
+                    // Update arraylist
+                    measurementArray.set(i, fixedMeasurement);
+                }
+            }
+        }
+        return measurementArray;
+    }
 }
